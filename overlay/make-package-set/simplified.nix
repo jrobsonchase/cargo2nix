@@ -12,12 +12,11 @@ args@{
   ...
 }:
 let
-  maybeDefault = channel: if channel ? default then channel.default else channel;
-  rustChannel' = maybeDefault (buildPackages.rustChannelOf ({
+  rustChannel' = buildPackages.rustChannelOf ({
     channel = args.rustChannel;
-  }));
+  });
   inherit (rustChannel') cargo;
-  rustc = rustChannel'.rust.override {
+  rustc = rustChannel'.minimal.override {
     targets = [
       (rustBuilder.rustLib.realHostTriple stdenv.targetPlatform)
     ];
