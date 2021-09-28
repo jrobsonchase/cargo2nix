@@ -16,7 +16,7 @@ let
     channel = args.rustChannel;
   });
   inherit (rustChannel') cargo;
-  rustc = rustChannel'.rust.override {
+  rustc = rustChannel'.minimal.override {
     targets = [
       (rustBuilder.rustLib.realHostTriple stdenv.targetPlatform)
     ];
