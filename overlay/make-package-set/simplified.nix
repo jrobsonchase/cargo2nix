@@ -12,9 +12,10 @@ args@{
   ...
 }:
 let
-  rustChannel' = buildPackages.rustChannelOf ({
+  maybeDefault = channel: if channel ? default then channel.default else channel;
+  rustChannel' = maybeDefault (buildPackages.rustChannelOf ({
     channel = args.rustChannel;
-  });
+  }));
   inherit (rustChannel') cargo;
   rustc = rustChannel'.rust.override {
     targets = [
