@@ -1,10 +1,12 @@
 { buildPackages, lib }:
 rec {
-  fetchCratesIo = { name, version, sha256 }: buildPackages.fetchurl {
+  fetchRegistry = genUrl: { name, version, sha256 }: builtins.fetchurl {
     name = "${name}-${version}.tar.gz";
-    url = "https://crates.io/api/v1/crates/${name}/${version}/download";
+    url = genUrl name version;
     inherit sha256;
   };
+
+  fetchCratesIo = fetchRegistry (name: version: "https://crates.io/api/v1/crates/${name}/${version}/download");
 
   fetchCrateGit = { url, name, version, rev, ref ? "HEAD" }: builtins.fetchGit {
     inherit url rev ref;

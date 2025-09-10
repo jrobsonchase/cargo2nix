@@ -23,6 +23,7 @@ args@{
   workspaceSrc,
   ignoreLockHash,
   cargoConfig ? {},
+    registries ? {},
 }:
 let
   nixifiedLockHash = "5c035f10b5acf3340ffef923e6bbd8f29ea9ee1fc19fbfcef1426ebb4060e13f";

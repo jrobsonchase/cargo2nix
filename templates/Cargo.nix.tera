@@ -25,6 +25,7 @@ args@{
   workspaceSrc,
   ignoreLockHash,
   cargoConfig ? {},
+  registries,
 }:
 let
   nixifiedLockHash = "{{ cargo_lock_hash }}";
@@ -36,8 +37,7 @@ let
 in if !lockHashIgnored && (nixifiedLockHash != currentLockHash) then
   throw ("Cargo.nix ${nixifiedLockHash} is out of sync with Cargo.lock ${currentLockHash}")
 else let
-  inherit (rustLib) fetchCratesIo fetchCrateLocal fetchCrateGit expandFeatures decideProfile genDrvsByProfile;
-  fetchCrateAlternativeRegistry = rustLib.fetchCrateAlternativeRegistryExpensive;
+  inherit (rustLib) fetchRegistry fetchCratesIo fetchCrateLocal fetchCrateGit expandFeatures decideProfile genDrvsByProfile;
   cargoConfig' = if cargoConfig != {} then cargoConfig else
                  if builtins.pathExists ./.cargo/config then lib.importTOML ./.cargo/config else
                  if builtins.pathExists ./.cargo/config.toml then lib.importTOML ./.cargo/config.toml else {};
@@ -85,8 +85,7 @@ in
     {%- elif crate.source.Local.path %}
     src = fetchCrateLocal workspaceSrc;
     {%- elif crate.source.Registry.index %}
-    src = fetchCrateAlternativeRegistry {
-      index = {{ crate.source.Registry.index }};
+    src = (fetchRegistry (builtins.getAttr "{{ crate.registry }}" registries)) {
       name = "{{ crate.name }}";
       version = "{{ crate.version }}";
       sha256 = "{{ crate.source.Registry.sha256 }}";
